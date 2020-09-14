@@ -1,0 +1,17 @@
+生成汇报报表
+    一、需求分析：抽取想要汇报的列生成excel
+    二、方案设计：
+        1.华为、中兴、爱立信三个sheet分别根据PPT中要求的列项进行抽取
+           然后汇总。
+    三、具体实现：
+        1.没有厂家，首先先添加'厂家'列
+             hcu.add_col_values（）
+        2.抽取添加'厂家'列后的sheet，根据PPT抽取要求的列数据
+            hcu.extract_column_data()
+        3.写入新的sheet
+        代码：huawei_report.py
+        文件：hss_miss.xlsx
+    四、验证
+        验证通过
+    五、注意问题
+        1.没有地市

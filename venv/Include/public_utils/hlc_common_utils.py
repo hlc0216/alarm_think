@@ -1,0 +1,210 @@
+import pandas as pd
+import xlrd
+import os
+import xlwt
+import openpyxl
+from openpyxl import load_workbook
+# import xlsxwriter
+import win32com.client as win32
+def huawei_hello():
+    print('hello from huawei_report!')
+def delete_files(root_file_path):
+    for root ,dirs,files in os.walk(root_file_path):
+        for name in files:
+            if name.endswith('.xls'):
+                os.remove(os.path.join(root,name))
+                print('删除文件：'+os.path.join(root,name))
+
+def add_sheet(file_path,sheet_name):
+    """
+    该函数是解决：为excel表格创建sheet
+    :param file_path:
+    :param sheet_name:
+    """
+    wb = wb = openpyxl.load_workbook(file_path)
+    wb.create_sheet(title=sheet_name, index=None)
+    wb.save(file_path)
+    print('往 %s 文件添加 %s 成功！'%(file_path ,sheet_name))
+
+def add_col_multi_values():
+    """
+    该函数是解决，同时向多个sheet写入数据
+    """
+    file_path = r'E:\Pycharm_workspace\华为HSS U2000历史告警查询结果_20200821.xls'
+    to_file_path = r'E:\Pycharm_workspace\lemon_copy.xlsx'
+    sheet_name = 'newSheet'
+    df1 = pd.read_excel(file_path)
+    df2 = pd.read_excel(file_path)
+
+    writer = pd.ExcelWriter(to_file_path)
+    df1.to_excel(writer,sheet_name='df_1',index=None)
+    df2.to_excel(writer,sheet_name='df_2',index=None)
+    writer.save()
+    # writer.close()
+    print('写入文件成功！')
+
+
+def _excelAddSheet(dataframe,excelWriter,sheet_name):
+    """
+该函数主要是为excel添加新的sheet，并将dataframe写入新的sheet（不覆盖其他sheet）
+这样就解决了直接使用to_excel覆盖原excel表中的sheet.
+
+    :param dataframe:
+    :param excelWriter:
+    :param sheet_name:
+    """
+    book = load_workbook(excelWriter.path)
+    excelWriter.book = book
+    dataframe.to_excel(excel_writer=excelWriter,sheet_name=sheet_name,index=None,header=None)
+    excelWriter.close()
+
+def add_col_values1(file_path,to_file_path,sheet_name,title,value): #在excel最后一列添加列数据
+    """
+    向excel文件添加一列数据,并将添加数据后的表写入另一个excel文件新的sheet中
+    :param file_path: 读入文件路径
+    :param to_file_path: 要写入文件的路径
+    :param sheet_name: 要新添加的sheet名字
+    :param title: 增加列的表头名字
+    :param value: 要增加列所对应的数据
+    """
+
+    #读入excel文件到dataframe
+    df = pd.read_excel(file_path)
+    #添加一列数据
+    total_row = len(df)
+    add_col_values=[]
+    print('总共包含%d行', total_row)
+    for i in range(total_row):  #制造数据
+        add_col_values.append(value)
+    df[title]=add_col_values
+
+    #将dataframe写入文件,excel必需已经存在
+    excelWriter = pd.ExcelWriter(to_file_path,engine='openpyxl')
+    _excelAddSheet(df,excelWriter,sheet_name)#为excel添加新的sheet，并将dataframe写入新的sheet（不覆盖其他sheet）
+    print('添加列数据完成，写入文件成功！')
+
+def add_col_values(file_path,sheet_name,title,value): #在excel最后一列添加列数据
+    """
+    向excel文件添加一列数据,并将添加数据后的表写入原表新的sheet中（函数的重构）
+    :param file_path: 要读入和写入的文件
+    :param sheet_name: 要新添加的sheet名字
+    :param title: 增加列的表头名字
+    :param value: 要增加列所对应的数据
+
+    """
+
+    #读入excel文件到dataframe
+    df = pd.read_excel(file_path)
+    #添加一列数据
+    total_row = len(df)
+    add_col_values=[]
+    print('总共包含%d行', total_row)
+    for i in range(total_row):  #制造数据
+        add_col_values.append(value)
+    df[title]=add_col_values
+
+    #将dataframe写入文件,excel必需已经存在
+    excelWriter = pd.ExcelWriter(file_path,engine='openpyxl')
+    _excelAddSheet(df,excelWriter,sheet_name)#为excel添加新的sheet，并将dataframe写入新的sheet（不覆盖其他sheet）
+    print('添加列数据完成，写入文件成功！')
+
+def extract_column_data(file_path,sheet_name,usecols,new_sheet_name):
+    """
+抽取表中指定列的数据，并存入新的sheet中
+    :param file_path: 待抽取的文件
+    :param sheet_name: 要存入的sheet_name
+    :param usecols: 要抽取得列名
+    """
+
+    df = pd.read_excel(file_path, sheet_name=sheet_name, usecols=usecols)
+    df_head_li = [df.columns.tolist()]
+    df_value_li = df_head_li + df.values.tolist() #添加列名
+
+    df1 = pd.DataFrame(df_value_li)
+
+    # 开始写入数据（不能直接使用toexcel,因为会覆盖以前的sheet）
+    excelWriter = pd.ExcelWriter(file_path, engine='openpyxl')
+    _excelAddSheet(df, excelWriter, new_sheet_name)  # 为excel添加新的sheet，并将dataframe写入新的sheet（不覆盖其他sheet）
+    print('抽取列数据完成，写入文件成功！')
+
+def xls2xlsx_transformat_file(xls_file_path):
+    '''
+    针对单个xls文件转化为xlsx
+    :param xls_file_path:
+    :return:转换成功后xlsx的文件路径
+    '''
+    file_name=xls_file_path
+    if file_name.endswith('.xls'):
+        excel = win32.gencache.EnsureDispatch('Excel.Application')
+        wb=excel.Workbooks.Open(file_name)
+        wb.SaveAs(file_name + "x", FileFormat=51)  # FileFormat = 51 is for .xlsx extension
+        wb.Close()  # FileFormat = 56 is for .xls extension
+        excel.Application.Quit()
+        print('文件格式转化成功！')
+        xlsx_file_path = file_name + 'x'
+    else:
+        print('文件格式已经是xlsx，不需转化!')
+        xlsx_file_path = file_name
+
+    return xlsx_file_path
+
+
+def xls2xlsx_transformat_dir(dir_path):
+    """
+    该函数主要解决：将文件夹下的所有xls文件转换为xlsx
+    """
+    ## 根目录
+    # rootdir = u'E:\Pycharm_workspace\data1 - 副本'
+    rootdir= dir_path
+    # 三个参数：父目录；所有文件夹名（不含路径）；所有文件名
+    for parent, dirnames, filenames in os.walk(rootdir):
+        for fn in filenames:
+            filedir = os.path.join(parent, fn)
+            print(filedir)
+            excel = win32.gencache.EnsureDispatch('Excel.Application')
+            wb = excel.Workbooks.Open(filedir)
+            # xlsx: FileFormat=51
+            # xls:  FileFormat=56,
+            # 后缀名的大小写不通配，需按实际修改：xls，或XLS
+            wb.SaveAs(filedir.replace('xls', 'xlsx'), FileFormat=51)
+            wb.Close()
+            excel.Application.Quit()
+    print('格式转换成功')
+
+
+def num2time(file_path, sheet_name, col_name):
+    '''
+    将excel文件中某一列数值转换为日期格式，比如
+    20200821010304    ------>    2020-08-21 01:03:04
+
+    :param file_path:要处理的源文件路径
+    :param sheet_name:源文件中sheet名字
+    :param col_name:要转换的列名
+    :return:null
+    '''
+    df = pd.read_excel(file_path, sheet_name=sheet_name)
+    num_list = []
+    time_list = []
+    num_list = df[col_name].tolist()  # 取出Envent Time那一列数据
+    str_temp = ''
+
+    # 那一列数据中存在非整数（'Cold Restart'）,parse()方法只认识数字，不认识单词
+    for num in num_list:
+        if type(num) == int:
+            time_list.append(parse(str(num)))
+        else:
+            time_list.append(num)
+
+    print('Integer value is being converted to time format.....................')
+    # 将转换成时间格式的list存入datafram，替换最初的Event Time那一列数据
+    df[col_name] = time_list
+    # 删除最后一列（pandas在写文件时，会默认在最后添加一列空值）
+    df.drop(df.columns[len(df.columns) - 1], axis=1, inplace=True)
+    # 写入原文件
+    df.to_excel(file_path, index=False)
+    print('数值转化为时间格式完成，写入文件成功！！')
+
+
+# if __name__ == '__main__':
+#     path=xls2xlsx_transformat_file(r'E:\Pycharm_workspace\alarm_think\data\onenet_warning_data1\华为智能网告警8.21.xls')
+#     print(path)

@@ -1,0 +1,5 @@
+case_id	title	data	
+1.0	正常登录	{"mobilephone"}:"18688773467","pwd":"123456"	
+2.0	输入错误的代码	{"mobilephone"}:"18688773467","pwd":"123457"	
+3.0	正常充值	{"mobilephone"}:"18688773467","amount":"1000"	
+4.0	充值输入负数	{"mobilephone"}:"18688773467","amount":"-100"	
