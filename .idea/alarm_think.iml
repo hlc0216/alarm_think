@@ -10,7 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/venv/Include/report" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/venv/Include/onenet_warning1" isTestSource="false" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Python 3.7 (alarm_think)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TestRunnerService">
