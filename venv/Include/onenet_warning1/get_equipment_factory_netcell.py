@@ -107,14 +107,13 @@ def get_equipment_factory_netcell(dir_path,to_dir_path):
 
 
 if __name__ == '__main__':
-    dir_path=r'H:\Pycharm_workspace\alarm_think\data\onenet_warning_data1\get_equipment_factory'
-    file_name='设备HSS FE.xlsx'
-    to_dir_path=r'H:\pycharm_workspace\alarm_think\data\onenet_warning_data1\get_equipment_factory_netcell'
-    file_path = os.path.join(dir_path, file_name)
-    equip_factory_netcell_name='网元名称'
+    abspath=os.path.abspath('../../../data')#设置相对路径（基准路径）
+    dir_path=abspath+r'\onenet_warning_data1\get_equipment_factory'
+
+    to_dir_path=abspath+r'\onenet_warning_data1\get_equipment_factory_netcell'
+
     get_equipment_factory_netcell(dir_path,to_dir_path)
 
 
-    # get_files(dir_path)
-    # test_str()
-    # test_mkdir()
+
+
