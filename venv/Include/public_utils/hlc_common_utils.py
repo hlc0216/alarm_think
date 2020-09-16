@@ -6,8 +6,46 @@ import openpyxl
 from openpyxl import load_workbook
 # import xlsxwriter
 import win32com.client as win32
-def huawei_hello():
-    print('hello from huawei_report!')
+
+def append_excel_xlsx(file_path,sheet_name,values):
+    """
+    采用openpyxl实现在excel文件追加内容
+    :param file_path: 文件路径
+    :param sheet_name: sheet名（传入必须字符串）
+    :param values:  要追加的数据（二维list）
+    """
+    wb = openpyxl.load_workbook(file_path)
+    sheetnames = wb.sheetnames
+    table = wb[sheet_name]
+    table = wb.active
+    print(table.title)  # 输出表名
+    nrows = table.max_row  # 获得行数
+    ncolumns = table.max_column  # 获得列数
+
+    # 注意行业列下标是从1开始的
+    for i in range(1, len(values) + 1):
+        for j in range(1, len(values[i - 1]) + 1):
+            table.cell(nrows + i, j).value = values[i - 1][j - 1]
+
+    wb.save(file_path)
+    print("xlsx格式表格追加写入数据成功！")
+
+def write_excel_xlsx(file_path, sheet_name, value):
+    """
+    采用openpyxl将数据写入excel（会覆盖不是追加）
+    :param file_path: 文件路径
+    :param sheet_name:
+    :param value:
+    """
+    index = len(value)
+    workbook = openpyxl.Workbook()  # 新建工作簿（默认有一个sheet？）
+    sheet = workbook.active  # 获得当前活跃的工作页，默认为第一个工作页
+    sheet.title = sheet_name  # 给sheet页的title赋值
+    for i in range(0, index):
+        for j in range(0, len(value[i])):
+            sheet.cell(row=i + 1, column=j + 1, value=str(value[i][j]))  # 行，列，值 这里是从1开始计数的
+    workbook.save(file_path)  # 保存
+    print("xlsx格式表格写入数据成功！")
 def delete_files(root_file_path):
     for root ,dirs,files in os.walk(root_file_path):
         for name in files:

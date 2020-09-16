@@ -28,9 +28,8 @@ if __name__ == '__main__':
     gef_file_path = os.path.join(dir_path, file_name)
     gef.get_equipment_factory(gef_dir_path, gef_file_name)
 
-    #3、在设备表的基础上，将设备表根据厂家再细分为华为、中兴、爱立信.
-    #读取源文件，遍历sheet（设备），每个sheet按照厂家再分，处理完
-    #产生新的表，每个表有三个sheet（华为、中兴、爱立信）
+    #3、在设备-厂家表的基础上，再根据网元细分，得到每个厂家对应的网元。.
+
     gefn_dir_path = abspath + r'\onenet_warning_data1\get_equipment_factory'
     gefn_to_dir_path = abspath + r'\onenet_warning_data1\get_equipment_factory_netcell'
     gefn.get_equipment_factory_netcell(gefn_dir_path,gefn_to_dir_path)

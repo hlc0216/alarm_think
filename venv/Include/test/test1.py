@@ -2,48 +2,59 @@ import pandas as pd
 import xlrd
 import xlwt
 import numpy as np
-oss_path=r"E:\Pycharm_workspace\OSS2.0告警查询导出.xls"
-oss_wangyuan='网元名称'
-oss_gaojing='告警标题'
-
-hss_path=r'E:\Pycharm_workspace\华为HSS U2000历史告警查询结果_20200821.xls'
-hss_wangyuan='告警源'
-hss_gaojing='名称'
-def test_del_list():
-    list1 = [[1,'tom'],[2,'jerry'],[3,'bob'],[4,'tony'],[6,'mary']]
-    list2 = ['tom','bob','libai','harry','dufu','mary']
-    list3=[]
-    for i in range (len(list1)-1):
-        # for j in range(len(list2)-1):
-        if list1[i][1] not in list2:
-            if list1[i] not in list3:
-                list3.append(list1[i])
-    print (list3)
+import openpyxl
 
 
 
 
-def toSumList(file_path,wangyuan,gaojing):
-    df=pd.read_excel(file_path)
-    print('%s读入文件完毕,包含的列有',file_path)
-    print(df.columns)
-    wangyuan_list=[]
-    gaojing_list=[]
-    hebing_list=[]
-    one_list=df[wangyuan].values.tolist()
-    two_list=df[gaojing].values.tolist()
-    sum_list=list(zip(t_list,d_list))
-    print('sumlist合并完成')
-    return sum_list
-def shaijian(sum_list1,sum_list2,shaijian_list):
-    shaijian_list=(set(sum_list1))
+def append_excel_xlsx(file_path,sheet_name,values):
+    wb = openpyxl.load_workbook(file_path)
+    sheetnames = wb.sheetnames
+    print(sheetnames)
+    # table = data.get_sheet_by_name(sheet_name)
+    table = wb[sheet_name]
 
+    table = wb.active
+    print(table.title)  # 输出表名
+    nrows = table.max_row  # 获得行数
+    ncolumns = table.max_column  # 获得列数
+
+    # 注意行业列下标是从1开始的
+    for i in range(1, len(values) + 1):
+        for j in range(1, len(values[i - 1]) + 1):
+            table.cell(nrows + i, j).value = values[i - 1][j - 1]
+
+    wb.save(file_path)
+    print("xlsx格式表格追加写入数据成功！")
+
+def write_excel_xlsx(path, sheet_name, value):
+    index = len(value)
+    workbook = openpyxl.Workbook()  # 新建工作簿（默认有一个sheet？）
+    sheet = workbook.active  # 获得当前活跃的工作页，默认为第一个工作页
+    sheet.title = sheet_name  # 给sheet页的title赋值
+    for i in range(0, index):
+        for j in range(0, len(value[i])):
+            sheet.cell(row=i + 1, column=j + 1, value=str(value[i][j]))  # 行，列，值 这里是从1开始计数的
+    workbook.save(path)  # 一定要保存
+    print("xlsx格式表格写入数据成功！")
 
 if __name__ == '__main__':
 
-    # df1=pd.DataFrame(td_list)
-    # df1.to_excel(r'E:\Pycharm_workspace\test1.xlsx',index=False)
-    # print("写入文件完成")
-    # test_del_list()
-    shaijian()
+    book_name_xlsx = r'E:\Pycharm_workspace\alarm_think\venv\Include\test\xlsx格式测试工作簿.xlsx'
 
+    sheet_name_xlsx = 'xlsx格式测试表'
+
+    value3 = [["姓名", "性别", "年龄", "城市", "职业"],
+              ["111", "女", "66", "石家庄", "运维工程师"],
+              ["222", "男", "55", "南京", "饭店老板"],
+              ["333", "女", "27", "苏州", "保安"], ]
+    value4 = [["姓名", "性别", "年龄", "城市", "职业"],
+              ["444", "女", "66", "石家庄", "运维工程师"],
+              ["555", "男", "55", "南京", "饭店老板"],
+              ["666", "女", "27", "苏州", "保安"], ]
+    values5 = [['E', 'X', 'C', 'E', 'L'],
+              [1, 2, 3, 4, 5],
+              ['a', 'b', 'c', 'd', 'e']]
+
+    # write_excel_xlsx(book_name_xlsx, sheet_name_xlsx, value4)
+    append_excel_xlsx(book_name_xlsx,'Sheet1',value3)
