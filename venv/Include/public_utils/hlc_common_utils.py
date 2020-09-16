@@ -16,7 +16,10 @@ def append_excel_xlsx(file_path,sheet_name,values):
     """
     wb = openpyxl.load_workbook(file_path)
     sheetnames = wb.sheetnames
-    table = wb[sheet_name]
+    if type(sheet_name)==str:
+        table = wb[sheet_name]
+    else :
+        table = wb[sheetnames[0]]
     table = wb.active
     print(table.title)  # 输出表名
     nrows = table.max_row  # 获得行数
@@ -28,7 +31,7 @@ def append_excel_xlsx(file_path,sheet_name,values):
             table.cell(nrows + i, j).value = values[i - 1][j - 1]
 
     wb.save(file_path)
-    print("xlsx格式表格追加写入数据成功！")
+    print("追加写入excel数据成功！")
 
 def write_excel_xlsx(file_path, sheet_name, value):
     """

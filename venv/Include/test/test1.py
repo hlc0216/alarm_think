@@ -5,14 +5,14 @@ import numpy as np
 import openpyxl
 
 
-
-
 def append_excel_xlsx(file_path,sheet_name,values):
     wb = openpyxl.load_workbook(file_path)
     sheetnames = wb.sheetnames
     print(sheetnames)
     # table = data.get_sheet_by_name(sheet_name)
-    table = wb[sheet_name]
+    if type(sheet_name)==str:
+        table = wb[sheet_name]
+    else:table = wb[sheetnames[0]]
 
     table = wb.active
     print(table.title)  # 输出表名
@@ -40,7 +40,7 @@ def write_excel_xlsx(path, sheet_name, value):
 
 if __name__ == '__main__':
 
-    book_name_xlsx = r'E:\Pycharm_workspace\alarm_think\venv\Include\test\xlsx格式测试工作簿.xlsx'
+    book_name_xlsx = r'H:\Pycharm_workspace\alarm_think\venv\Include\test\xlsx格式测试工作簿.xlsx'
 
     sheet_name_xlsx = 'xlsx格式测试表'
 
@@ -58,3 +58,5 @@ if __name__ == '__main__':
 
     # write_excel_xlsx(book_name_xlsx, sheet_name_xlsx, value4)
     append_excel_xlsx(book_name_xlsx,'Sheet1',value3)
+    # append_excel_xlsx(book_name_xlsx,0,value4)
+
