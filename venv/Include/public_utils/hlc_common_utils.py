@@ -6,7 +6,52 @@ import openpyxl
 from openpyxl import load_workbook
 # import xlsxwriter
 import win32com.client as win32
+def Match_column_data(file_path,colum_name,to_file_path):
+    """
+    有两个sheet中存在相同的列名，列数据是包含关系，根据sheet中的列数据抽取sheet2中
+    包含sheet1列数据的行数据
+    :param file_path: 文件路径（包含sheet1,sheet2）
+    :param colum_name: 两个sheet都包含的列名
+    :param to_file_path: 要写入的文件路径
+    """
+    print('开始')
+    file_path = file_path
+    df1 = pd.read_excel(file_path, sheet_name=0)
+    list1 = df1[colum_name].values.tolist()
+    df2 = pd.read_excel(file_path, sheet_name=1)
+    list2 = df2.values.tolist()
+    list3 = []
 
+    for i in range(len(list1)):
+        for j in range(len(list2)):
+            if list1[i] == list2[j][1]:
+                list3.append(list2[j])
+
+    to_file_path = to_file_path
+    df3 = pd.DataFrame(list3)
+    excelWriter = pd.ExcelWriter(file_path, engine='openpyxl')
+    to_sheet_name = 'result'
+    hcu._excelAddSheet(df3, excelWriter, to_sheet_name)
+    print('匹配列数据完成，并抽出数据写入新的sheet(result)中！')
+def File_content_merge(file_path1,file_path2,to_file_path):
+    """
+    实现将两个（列名相同的）excel文件的内容合并到一个excel中
+    :param file_path1: 文件1路径
+    :param file_path2: 文件2路径
+    :param to_file_path: 要写入的文件路径
+    """
+    print('实现将两个（列名相同的）excel文件的内容合并到一个excel中')
+    file_path1 = file_path1
+    file_path2 = file_path2
+    df1 = pd.read_excel(file_path1, sheet_name=0)
+    df1_head_list = [df1.columns.tolist()]
+    df2 = pd.read_excel(file_path2, sheet_name=0)
+    df2_head_list = [df2.columns.tolist()]
+    df3 = pd.DataFrame()
+    sumlist =  df1_head_list + df1.values.tolist()+df2_head_list + df2.values.tolist()
+    to_file_path = to_file_path
+    pd.DataFrame(sumlist).to_excel(to_file_path, header=None, index=None)
+    print('两个excel文件文本合并完成！')
 def append_excel_xlsx(file_path,sheet_name,values):
     """
     采用openpyxl实现在excel文件追加内容

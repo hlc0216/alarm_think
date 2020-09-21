@@ -104,11 +104,9 @@ def get_onenet_unique_warning0 (file_path,file_name,to_dir_path):
 if __name__ == '__main__':
     #主函数测试用
     abspath = os.path.abspath('../../../data')  # 设置相对路径（基准路径）
-    # 1、处理源数据得出各个设备表（sbc、scscf、hss fe等）
+
     dir_path = abspath + r'\onenet_warning_data1\get_equipment_factory_netcell'
     to_dir_path = abspath + r'\onenet_warning_data1\get_onenet_unique_warning'
-
-
     get_onenet_unique_warning(dir_path,to_dir_path)
 
 
